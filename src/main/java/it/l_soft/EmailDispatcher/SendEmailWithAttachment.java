@@ -177,7 +177,7 @@ public class SendEmailWithAttachment {
 				// Set From: header field of the header.
 				message.setFrom(new InternetAddress(ap.getEmailSentFrom().compareTo("") == 0 ? 
 											ap.getMailServerUsername() : ap.getEmailSentFrom()));
-
+				logger.debug("Message sent from: '" + message.getFrom()[0] + "'");
 				if ((excel.getEmail() == null) || 
 					(excel.getEmail().trim().compareTo("") == 0) ||
 					(excel.getEmail().trim().compareTo("0") == 0))
