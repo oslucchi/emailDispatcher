@@ -91,10 +91,11 @@ public class SendEmailWithAttachment {
 
 		Properties props = new Properties();
 
+		logger.debug("Connecting to '" + ap.getMailServerHost() + "' on port " + ap.getMailServerPort());
 		props.put("mail.smtp.host", ap.getMailServerHost());
 		props.put("mail.smtp.ssl.trust", ap.getMailServerHost());
-//		props.put("mail.smtp.auth", "true");
-		props.put("mail.smtp.auth", "false");
+		props.put("mail.smtp.auth", "true");
+//		props.put("mail.smtp.auth", "false");
 		props.put("mail.smtp.starttls.enable", "true");
 		props.put("mail.smtp.ssl.protocols", "TLSv1.2");
 		props.put("mail.smtp.port", ap.getMailServerPort());
@@ -122,13 +123,13 @@ public class SendEmailWithAttachment {
 		}
 
 		// Get the Session object.
-//		Session session = Session.getInstance(props,
-//				new javax.mail.Authenticator() {
-//			protected PasswordAuthentication getPasswordAuthentication() {
-//				return new PasswordAuthentication(mailServerUsername, mailServerPassword);
-//			}
-//		});
-		Session session = Session.getDefaultInstance(props);
+		Session session = Session.getInstance(props,
+				new javax.mail.Authenticator() {
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication(ap.getMailServerUsername(), ap.getMailServerPassword());
+			}
+		});
+//		Session session = Session.getDefaultInstance(props);
 
 		int count = 0;
 		try {
@@ -169,7 +170,7 @@ public class SendEmailWithAttachment {
 					cliente = excel.getEmail();
 				}
 				
-				System.out.print("Row " + excel.rowIdx + " - client " + cliente );
+				logger.debug("Row " + excel.rowIdx + " - client " + cliente );
 				// Create a default MimeMessage object.
 				Message message = new MimeMessage(session);
 
@@ -266,10 +267,10 @@ public class SendEmailWithAttachment {
 					// Send the complete message parts
 					message.setContent(multipart);
 
-					System.out.print(" sending to:");
+					logger.debug(" sending to:");
 					for(y = 0; y < message.getAllRecipients().length; y++)
-						System.out.print(" " + message.getAllRecipients()[y]);
-//					Transport.send(message);
+						logger.debug(message.getAllRecipients()[y]);
+					Transport.send(message);
 					logger.debug(" - sent successfully....");
 					excel.setSentFlag(ap.getEmailSentCheckbox(), "*");
 					Thread.sleep(timeout);
