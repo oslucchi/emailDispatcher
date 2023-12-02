@@ -91,17 +91,31 @@ public class SendEmailWithAttachment {
 
 		Properties props = new Properties();
 
-		logger.debug("Connecting to '" + ap.getMailServerHost() + "' on port " + ap.getMailServerPort());
+		logger.debug("Using '" + ap.getMailServerHost() + "' on port " + ap.getMailServerPort() + " as relay");
 		props.put("mail.smtp.host", ap.getMailServerHost());
-		props.put("mail.smtp.ssl.trust", ap.getMailServerHost());
-		props.put("mail.smtp.auth", "true");
-//		props.put("mail.smtp.auth", "false");
-		props.put("mail.smtp.starttls.enable", "true");
-		props.put("mail.smtp.ssl.protocols", "TLSv1.2");
 		props.put("mail.smtp.port", ap.getMailServerPort());
 
-		props.put("mail.smtp.user", ap.getMailServerUsername());
-		props.put("mail.smtp.password", ap.getMailServerPassword());
+		Session session;
+		if (!ap.isUseAuth())
+		{
+			props.put("mail.smtp.auth", "false");
+			session = Session.getDefaultInstance(props);
+		}
+		else
+		{
+			props.put("mail.smtp.auth", "true");
+			props.put("mail.smtp.ssl.trust", ap.getMailServerHost());			
+			props.put("mail.smtp.starttls.enable", "true");
+			props.put("mail.smtp.ssl.protocols", "TLSv1.2");
+			props.put("mail.smtp.user", ap.getMailServerUsername());
+			props.put("mail.smtp.password", ap.getMailServerPassword());
+			session = Session.getInstance(props,
+					new javax.mail.Authenticator() {
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return new PasswordAuthentication(ap.getMailServerUsername(), ap.getMailServerPassword());
+				}
+			});
+		}
 
 		BufferedReader br = null;
 		StringBuilder mailBody = new StringBuilder();
@@ -121,15 +135,6 @@ public class SendEmailWithAttachment {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		// Get the Session object.
-		Session session = Session.getInstance(props,
-				new javax.mail.Authenticator() {
-			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(ap.getMailServerUsername(), ap.getMailServerPassword());
-			}
-		});
-//		Session session = Session.getDefaultInstance(props);
 
 		int count = 0;
 		try {
@@ -267,9 +272,14 @@ public class SendEmailWithAttachment {
 					// Send the complete message parts
 					message.setContent(multipart);
 
-					logger.debug(" sending to:");
+					String addresseeList = "", sep = "";
 					for(y = 0; y < message.getAllRecipients().length; y++)
-						logger.debug(message.getAllRecipients()[y]);
+					{
+						addresseeList += sep + message.getAllRecipients()[y];
+						sep = "; ";
+					}
+					logger.debug(" sending to: " + addresseeList);
+					
 					Transport.send(message);
 					logger.debug(" - sent successfully....");
 					excel.setSentFlag(ap.getEmailSentCheckbox(), "*");

@@ -106,8 +106,9 @@ public class ReadFromExcel {
 	    }
 	    if (emailBCCColIdx == -1)
 	    	emailBCCValue = ap.getExcelEmailBCCFieldName();
+	    
 	    if (fileAttachColIdx == -1)
-	    	fileAttachValue = ap.getExcelEmailTOFieldName();
+	    	fileAttachValue = ap.getExcelEmailAttachFieldName();
 
 	    rowIdx = startFrom;
 	}

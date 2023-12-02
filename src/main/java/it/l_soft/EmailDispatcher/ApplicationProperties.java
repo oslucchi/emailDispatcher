@@ -30,11 +30,13 @@ public class ApplicationProperties {
 	
 	private String mailServerUsername = ""; 
 	private String mailServerHost = "";  
-	private int mailServerPort;
+	private String mailServerPort = "";
 	private String mailServerPassword = ""; 
 	
 	private int stopEvery = 50;
 	private int stopFor = 5000;
+	
+	private boolean useAuth = false;
 	
 	private String[] colHeaders;
 	
@@ -94,8 +96,9 @@ public class ApplicationProperties {
 
     	stopEvery = Integer.parseInt(properties.getProperty("stopEvery"));
     	stopFor = Integer.parseInt(properties.getProperty("stopFor"));
-    	colHeaders = properties.getProperty("colHeaders").split(",");
+    	colHeaders = properties.getProperty("colHeaders").split(", ");
     	
+    	useAuth = Boolean.parseBoolean(properties.getProperty("useAuth"));
     	
     	String envConf = System.getProperty("envConf");
     	try 
@@ -113,7 +116,7 @@ public class ApplicationProperties {
     		return;
 		}
     	mailServerHost = properties.getProperty("mailServerHost");
-    	mailServerPort = Integer.parseInt(properties.getProperty("mailServerPort"));
+    	mailServerPort = properties.getProperty("mailServerPort");
 
     	properties = new Properties();
     	try 
@@ -281,11 +284,11 @@ public class ApplicationProperties {
 		this.mailServerHost = mailServerHost;
 	}
 
-	public int getMailServerPort() {
+	public String getMailServerPort() {
 		return mailServerPort;
 	}
 
-	public void setMailServerPort(int mailServerPort) {
+	public void setMailServerPort(String mailServerPort) {
 		this.mailServerPort = mailServerPort;
 	}
 
@@ -327,5 +330,14 @@ public class ApplicationProperties {
 
 	public void setColHeaders(String[] colHeaders) {
 		this.colHeaders = colHeaders;
+	}
+
+	public boolean isUseAuth() {
+		return useAuth;
+	}
+
+	public void setUseAuth(boolean useAuth) {
+		this.useAuth = useAuth;
 	}	
+
 }
