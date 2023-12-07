@@ -164,13 +164,8 @@ public class SendEmailWithAttachment {
 					}
 					countSent = 1;
 				}
-				
-				String cliente = excel.getField(ap.getColHeaders()[Constants.COGNOME]);
-				if (cliente.length() > 15)
-				{
-					cliente = cliente.substring(0, 15);
-				}
-				else if (cliente.length() == 0)
+				String cliente = excel.getField("Descrizione");
+				if (cliente.length() == 0)
 				{
 					cliente = excel.getEmail();
 				}
@@ -278,7 +273,7 @@ public class SendEmailWithAttachment {
 						addresseeList += sep + message.getAllRecipients()[y];
 						sep = "; ";
 					}
-					logger.debug(" sending to: " + addresseeList);
+					logger.debug(" sending to: '" + addresseeList + "'");
 					
 					Transport.send(message);
 					logger.debug(" - sent successfully....");
